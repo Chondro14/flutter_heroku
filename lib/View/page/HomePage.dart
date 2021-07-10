@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/UserModel.dart';
 import 'package:laravel_heroku/View/components/ProductPopularCard.dart';
 import 'package:laravel_heroku/View/components/ProductTile.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel user = authProvider.user;
+
+    String? image() {
+      String? mantap;
+      if (user.profilePhotoUrl != null) {
+        mantap = user.profilePhotoUrl;
+        return mantap;
+      } else {
+        mantap =
+            "https://pbs.twimg.com/profile_images/3058705279/f548c9e85d5ec132dd227e3f4b91cbed_400x400.jpeg";
+        return mantap;
+      }
+    }
 
     Widget header() {
       return Container(
@@ -15,19 +32,20 @@ class HomePage extends StatelessWidget {
             top: defaultMargin, left: defaultMargin, right: defaultMargin),
         child: Row(
           children: [
-            Expanded(flex: 2,
+            Expanded(
+              flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hallo,Chondro Satrio Wibowo',
+                    'Hallo,${user.name}',
                     style: primaryTextStyle.copyWith(
                         fontSize: 24, fontWeight: semiBold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
                   Text(
-                    '@chondro',
+                    '${user.username}',
                     style: subtitleTextStyle.copyWith(fontSize: 16),
                   )
                 ],
@@ -41,7 +59,8 @@ class HomePage extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.green,
                   image: DecorationImage(
-                      image: AssetImage('assets/MaskGroupprofile.png'))),
+                      image: NetworkImage(user.profilePhotoUrl ??
+                          "https://pbs.twimg.com/profile_images/3058705279/f548c9e85d5ec132dd227e3f4b91cbed_400x400.jpeg"))),
             )
           ],
         ),

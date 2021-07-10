@@ -73,7 +73,7 @@ class CartPage extends StatelessWidget {
     Widget customBottomNav() {
       return Container(
         width: double.infinity,
-        height: 165,
+        height: 170,
         child: Column(
           children: [
             Container(
@@ -109,7 +109,9 @@ class CartPage extends StatelessWidget {
                 style: TextButton.styleFrom(
                     backgroundColor: primary,
                     padding: EdgeInsets.symmetric(horizontal: 20),shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/checkout');
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

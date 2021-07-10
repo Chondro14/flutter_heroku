@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/UserModel.dart';
+import 'package:laravel_heroku/View/components/LoadingButton.dart';
 import 'package:laravel_heroku/View/components/TextFormField.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -9,16 +13,41 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-
   TextEditingController nameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   bool obsecureText = true;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handelSignUp() async {
+
+      setState(() {
+        isLoading = true;
+      });
+      if (await authProvider.register(
+          nameController.text,
+          usernameController.text,
+          emailController.text,
+          passwordController.text)) {
+        Navigator.pushNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: alertColor,
+            content: Text(
+          'Gagal Register',
+          textAlign: TextAlign.center,
+        )));
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     Widget header(BuildContext context) {
       return Container(
         margin: EdgeInsets.only(top: 30),
@@ -41,6 +70,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
     }
+
     Widget nameInput(BuildContext context) {
       return Container(
         margin: EdgeInsets.only(top: 50),
@@ -50,7 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
             Text(
               'Full Name',
               style:
-              primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+                  primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
             ),
             SizedBox(
               height: 12,
@@ -73,10 +103,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Expanded(
                         child: TextFieldCustomDevice(
-                          controller: nameController,
-                          hint: "Your Full name",
-                          obsecureText: false,
-                        ))
+                      controller: nameController,
+                      hint: "Your Full name",
+                      obsecureText: false,
+                    ))
                   ],
                 ),
               ),
@@ -85,6 +115,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
     }
+
     Widget usernameInput(BuildContext context) {
       return Container(
         margin: EdgeInsets.only(top: 10),
@@ -94,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
             Text(
               'Username',
               style:
-              primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+                  primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
             ),
             SizedBox(
               height: 12,
@@ -117,10 +148,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Expanded(
                         child: TextFieldCustomDevice(
-                          controller: usernameController,
-                          hint: "Your username",
-                          obsecureText: false,
-                        ))
+                      controller: usernameController,
+                      hint: "Your username",
+                      obsecureText: false,
+                    ))
                   ],
                 ),
               ),
@@ -235,18 +266,20 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
     }
+
     Widget signInButton() {
       return Container(
         height: 50,
         width: double.infinity,
         margin: EdgeInsets.only(top: 30),
         child: TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/home');
-            },
+            onPressed:
+              handelSignUp
+            ,
             child: Text(
               'Sign up',
-              style: primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+              style:
+                  primaryTextStyle.copyWith(fontSize: 16, fontWeight: medium),
             ),
             style: TextButton.styleFrom(
                 backgroundColor: primary,
@@ -254,16 +287,26 @@ class _SignUpPageState extends State<SignUpPage> {
                     borderRadius: BorderRadius.circular(12)))),
       );
     }
+
     Widget footer(BuildContext context) {
       return Container(
           margin: EdgeInsets.only(bottom: 30),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Already have an account?",style: subtitleTextStyle.copyWith(fontSize: 12),),
-              TextButton(onPressed: () {
-                Navigator.pushNamed(context, '/sign-in');
-              }, child: Text('Sign in',style: purpleTextStyle.copyWith(fontSize: 12,fontWeight: bold),))
+              Text(
+                "Already have an account?",
+                style: subtitleTextStyle.copyWith(fontSize: 12),
+              ),
+              TextButton(
+                  onPressed: () {
+
+                  },
+                  child: Text(
+                    'Sign in',
+                    style: purpleTextStyle.copyWith(
+                        fontSize: 12, fontWeight: bold),
+                  ))
             ],
           ));
     }
@@ -275,13 +318,16 @@ class _SignUpPageState extends State<SignUpPage> {
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: defaultMargin),
           child: Column(
-            crossAxisAlignment:CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               header(context),
               nameInput(context),
               usernameInput(context),
               emailInput(context),
-              passwordInput(context),signInButton(),Spacer(),footer(context)
+              passwordInput(context),
+              isLoading?LoadingButton():signInButton(),
+              Spacer(),
+              footer(context)
             ],
           ),
         ),

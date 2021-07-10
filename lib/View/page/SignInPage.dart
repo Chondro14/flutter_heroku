@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laravel_heroku/View/components/LoadingButton.dart';
 import 'package:laravel_heroku/View/components/TextFormField.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -14,12 +17,36 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool obsecureText = true;
+  bool isLoading = false;
 
 
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    handelSignIn() async {
+
+      setState(() {
+        isLoading = true;
+      });
+      if (await authProvider.login(
+
+          emailController.text,
+          passwordController.text)) {
+        Navigator.pushNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: alertColor,
+            content: Text(
+              'Gagal Login',
+              textAlign: TextAlign.center,
+            )));
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     Widget header(BuildContext context) {
       return Container(
         margin: EdgeInsets.only(top: 30),
@@ -154,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
         margin: EdgeInsets.only(top: 30),
         child: TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/home');
+              handelSignIn();
             },
             child: Text(
               'Sign in',
@@ -193,7 +220,7 @@ class _SignInPageState extends State<SignInPage> {
               header(context),
               emailInput(context),
               passwordInput(context),
-              signInButton(),
+              isLoading?LoadingButton():signInButton(),
               Spacer(),
               footer(context)
             ],

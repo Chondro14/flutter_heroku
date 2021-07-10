@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/UserModel.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -8,8 +11,13 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+
+
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel user = authProvider.user;
+
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor1,
@@ -55,7 +63,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             TextFormField(
               style: primaryTextStyle,
               decoration: InputDecoration(
-                  hintText: 'Chondro Satrio Wibowo',
+                  hintText: '${user.name}',
                   hintStyle: primaryTextStyle,enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: subtitleColor))),
             )
           ],
@@ -77,7 +85,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             TextFormField(
               style: primaryTextStyle,
               decoration: InputDecoration(
-                  hintText: '@chondro',
+                  hintText: '${user.username}',
                   hintStyle: primaryTextStyle,enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: subtitleColor))),
             )
           ],
@@ -99,7 +107,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             TextFormField(
               style: primaryTextStyle,
               decoration: InputDecoration(
-                  hintText: 'chondro@gmail.com',
+                  hintText: '${user.email}',
                   hintStyle: primaryTextStyle,enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: subtitleColor))),
             )
           ],
