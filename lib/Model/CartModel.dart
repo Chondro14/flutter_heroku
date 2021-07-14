@@ -1,0 +1,26 @@
+import 'package:laravel_heroku/Model/ProductModel.dart';
+
+class CartModel{
+  int? id;
+  ProductModel? product;
+  int? quantity;
+
+  CartModel({this.product,this.id,this.quantity});
+
+  CartModel.fromJson(Map<String,dynamic> json){
+    id = json['id'];
+    product = ProductModel.fromJson(json);
+    quantity = json['quantity'];
+  }
+  Map<String,dynamic> toJson(){
+    return {
+      'id':id,
+      'product':product?.toJson(),
+      'quantity':quantity
+    };
+  }
+
+  double getTotalPrice(){
+    return product?.price ?? 0.0 * (quantity as double)   ;
+  }
+}

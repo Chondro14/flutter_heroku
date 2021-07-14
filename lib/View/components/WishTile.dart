@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
+import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class WishTile extends StatelessWidget {
+
+  ProductModel product;
+
+  WishTile({required this.product});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+
+    WishListProvider wishListProvider = Provider.of<WishListProvider>(context);
     return Container(
       margin: EdgeInsets.only(top: 20),
       padding: EdgeInsets.only(top: 10, left: 12, right: 20, bottom: 14),
@@ -17,8 +26,8 @@ class WishTile extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/sepatuhiking.png',
+            child: Image.network(
+              product.galleries?[0].url??"",
               width: 60,
             ),
           ),
@@ -30,22 +39,27 @@ class WishTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "TERREX TRAILMAKER HIKING SHOES",overflow: TextOverflow.ellipsis,
+                  product.name ?? "",overflow: TextOverflow.ellipsis,
                   style: primaryTextStyle.copyWith(fontWeight: semiBold),maxLines: 2,
                 ),
                 Text(
-                  "\$143,98",
+                  " \$ ${product.price}",
                   style: priceTextStyle,
                 )
               ],
             ),
           ),
-          Container(
-            width: 32,
-            height: 32,
-            decoration:
-                BoxDecoration(shape: BoxShape.circle, color: secondaryColor),
-            child: Icon(Icons.favorite,color: Colors.white,size: 16,)
+          GestureDetector(
+            onTap: (){
+              wishListProvider.setProduct(product);
+            },
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: secondaryColor),
+              child: Icon(Icons.favorite,color: Colors.white,size: 16,)
+            ),
           )
         ],
       ),

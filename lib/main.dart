@@ -11,7 +11,10 @@ import 'package:laravel_heroku/View/page/SignInPage.dart';
 import 'package:laravel_heroku/View/page/SignUpPage.dart';
 import 'package:laravel_heroku/View/page/SplashPage.dart';
 import 'package:laravel_heroku/providers/AuthProvider.dart';
+import 'package:laravel_heroku/providers/CartProvider.dart';
 import 'package:laravel_heroku/providers/ProductProvider.dart';
+import 'package:laravel_heroku/providers/TransactionProvider.dart';
+import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -29,7 +32,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => AuthProvider(),
         ),
-        ChangeNotifierProvider(create: (context)=>ProductProvider())
+        ChangeNotifierProvider(create: (context)=>ProductProvider()),
+        ChangeNotifierProvider(create: (context)=>WishListProvider()),
+        ChangeNotifierProvider(create: (context)=>CartProvider()),
+        ChangeNotifierProvider(create: (context)=> TransactionProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:laravel_heroku/View/components/CheckoutTile.dart';
+import 'package:laravel_heroku/View/components/LoadingButton.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
+import 'package:laravel_heroku/providers/CartProvider.dart';
+import 'package:laravel_heroku/providers/TransactionProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutPage extends StatefulWidget {
   @override
@@ -9,8 +14,25 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+
+    handleCheckOut()async{
+
+      setState(() {
+        isLoading = true;
+      });
+      if(await transactionProvider.checkout(authProvider.user.token!, cartProvider.carts, cartProvider.totalPrice())){
+        cartProvider.carts = [];
+        Navigator.pushNamedAndRemoveUntil(context, "/checkout-success", (route) => false);
+      }
+    }
     PreferredSizeWidget header() {
       return AppBar(
         backgroundColor: backgroundColor1,
@@ -36,8 +58,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   style: primaryTextStyle.copyWith(
                       fontWeight: medium, fontSize: 16),
                 ),
-                CheckoutTile(),
-                CheckoutTile()
+                Column(children: cartProvider.carts.map((e) => CheckoutTile(cartModel: e,)).toList(),)
+
+
               ],
             ),
           ),
@@ -149,7 +172,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       style: secondaryTextStyle.copyWith(fontSize: 12),
                     ),
                     Text(
-                      '2 Items',
+                      '${cartProvider.totalItems()}',
                       style: primaryTextStyle.copyWith(fontWeight: medium),
                     )
                   ],
@@ -165,7 +188,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       style: secondaryTextStyle.copyWith(fontSize: 12),
                     ),
                     Text(
-                      '\$575,96',
+                      '\$${cartProvider.totalPrice()}',
                       style: primaryTextStyle.copyWith(fontWeight: medium),
                     )
                   ],
@@ -221,7 +244,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             thickness: 1,
             color: Color(0xff2E3141),
           ),
-          Container(
+          isLoading ? Container(margin: EdgeInsets.only(bottom: 30),child: LoadingButton()):Container(
             height: 50,
             width: double.infinity,
             margin: EdgeInsets.symmetric(vertical: defaultMargin),
@@ -231,7 +254,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12))),
-              onPressed: () {Navigator.pushNamedAndRemoveUntil(context,  '/checkout-success', (route) => false);},
+              onPressed: handleCheckOut,
               child: Text('Checkout Now',style: primaryTextStyle.copyWith(fontSize: 16,fontWeight: semiBold),),
             ),
           )

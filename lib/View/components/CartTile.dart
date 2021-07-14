@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laravel_heroku/Model/CartModel.dart';
+import 'package:laravel_heroku/providers/CartProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class CartTile extends StatelessWidget {
+  CartModel cartModel ;
+  CartTile({required this.cartModel});
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
     return Container(
       margin: EdgeInsets.only(top: defaultMargin),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -21,7 +27,7 @@ class CartTile extends StatelessWidget {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     image: DecorationImage(
-                        image: AssetImage('assets/sepatuhiking.png'))),
+                        image: NetworkImage(cartModel.product?.galleries?[0].url??'assets/sepatuhiking.png'))),
               ),
               SizedBox(
                 width: 12,
@@ -31,41 +37,54 @@ class CartTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'TERREX TRAILMAKER HIKING SHOES',
+                    cartModel.product?.name ?? "",
                     style: primaryTextStyle.copyWith(fontWeight: semiBold),
                   ),
                   Text(
-                    '\$143,98',
+                  " \$ ${cartModel.product?.price}",
                     style: priceTextStyle,
                   )
                 ],
               )),
               Column(
                 children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: primary),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 10,
+                  GestureDetector(
+                    onTap: (){
+                      cartProvider.addQuantity(cartModel.id!);
+                      print(cartProvider.totalItems());
+                    },
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: primary),
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 10,
+                      ),
                     ),
                   ),
+                  SizedBox(height: 2,),
                   Text(
-                    '2',
+                    cartModel.quantity.toString(),
                     style: primaryTextStyle,
                   ),
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: subtitleColor),
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.white,
-                      size: 10,
+                  SizedBox(height: 2,),
+                  GestureDetector(
+                    onTap: (){
+                      cartProvider.reduceQuantity(cartModel.id!);
+                    },
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: subtitleColor),
+                      child: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                        size: 10,
+                      ),
                     ),
                   )
                 ],
@@ -75,7 +94,9 @@ class CartTile extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    cartProvider.removeCart(cartModel.id!);
+                  },
                   icon: Icon(
                     Icons.restore_from_trash,
                     color: alertColor,

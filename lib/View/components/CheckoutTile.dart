@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/CartModel.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class CheckoutTile extends StatelessWidget {
+
+  CartModel cartModel;
+  CheckoutTile({required this.cartModel});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -19,7 +23,7 @@ class CheckoutTile extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
-                    image: AssetImage('assets/sepatuhiking.png'))),
+                    image: NetworkImage(cartModel.product?.galleries?[0].url??'assets/sepatuhiking.png'))),
           ),
           SizedBox(
             width: 12,
@@ -29,13 +33,13 @@ class CheckoutTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'TERREX TRAILMAKER HIKING SHOES',
+                '${cartModel.product?.name}',
                 style: primaryTextStyle.copyWith(fontWeight: semiBold),overflow: TextOverflow.ellipsis,maxLines: 2,
               ),SizedBox(height: 2,),
-              Text('\$143,98',style: priceTextStyle,)
+              Text('\$${cartModel.product?.price}',style: priceTextStyle,)
             ],
           )),
-          Text('2 Items',style: secondaryTextStyle.copyWith(fontSize: 12),)
+          Text('${cartModel.quantity}',style: secondaryTextStyle.copyWith(fontSize: 12,fontWeight: semiBold),)
         ],
       ),
     );

@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:laravel_heroku/View/components/WishTile.dart';
+import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class FavoritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+
+    WishListProvider wishListProvider = Provider.of<WishListProvider>(context);
     Widget header() {
       return AppBar(
         automaticallyImplyLeading: false,
@@ -76,13 +80,13 @@ class FavoritePage extends StatelessWidget {
           child: Container(
             color: backgroundColor3,
         child: ListView(padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-          children: [WishTile(),WishTile()],
+          children:wishListProvider.wishlist.map((e) => WishTile(product: e,)).toList(),
         ),
       ));
     }
 
     return Column(
-      children: [header(), content()],
+      children: [header(),wishListProvider.wishlist.length == 0 ? emptyFavorite():content()],
     );
   }
 }

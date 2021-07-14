@@ -2,7 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:laravel_heroku/Model/ProductModel.dart';
+import 'package:laravel_heroku/providers/CartProvider.dart';
+import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
 class ProductPage extends StatefulWidget {
   final ProductModel product;
@@ -12,8 +15,6 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-
-
   List<String> images = [
     'assets/sepatuhiking.png',
     'assets/sepatuhiking1.png',
@@ -32,6 +33,79 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    WishListProvider wishListProvider = Provider.of<WishListProvider>(context);
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
+    Future<void> showSuccessDialog() async {
+      return showDialog(
+          context: context,
+          builder: (context) => Container(
+                width: MediaQuery.of(context).size.width - (2 * defaultMargin),
+                child: AlertDialog(
+                  backgroundColor: backgroundColor3,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(
+                              Icons.close_rounded,
+                              color: primaryTextColor,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.check_circle,
+                          color: secondaryColor,
+                          size: 100,
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          'Hurray',
+                          style: primaryTextStyle.copyWith(
+                              fontSize: 18, fontWeight: semiBold),
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          'Item addes successfully',
+                          style: secondaryTextStyle,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          width: 154,
+                          height: 44,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/cart');
+                            },
+                            style: TextButton.styleFrom(
+                                backgroundColor: primary,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12))),
+                            child: Text(
+                              'View My Cart',
+                              style: primaryTextStyle.copyWith(fontSize: 16),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ));
+    }
 
     Widget indicator(int index) {
       return Container(
@@ -73,7 +147,7 @@ class _ProductPageState extends State<ProductPage> {
           CarouselSlider(
               items: widget.product.galleries
                   ?.map((e) => Image.network(
-                        e.url??"",
+                        e.url ?? "",
                         width: MediaQuery.of(context).size.width,
                         height: 310,
                         fit: BoxFit.cover,
@@ -145,14 +219,38 @@ class _ProductPageState extends State<ProductPage> {
                       )
                     ],
                   )),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: secondaryColor),
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      wishListProvider.setProduct(widget.product);
+
+                      if (wishListProvider.isWishlist(widget.product)) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                          "Has been added to the Wishlist",
+                          textAlign: TextAlign.center,
+                        )));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                          'Has been removed from the Wishlist',
+                          textAlign: TextAlign.center,
+                        )));
+                      }
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: wishListProvider.isWishlist(widget.product)
+                              ? backgroundColor3
+                              : secondaryColor),
+                      child: Icon(
+                        Icons.favorite,
+                        color: wishListProvider.isWishlist(widget.product)
+                            ? secondaryColor
+                            : Colors.white,
+                      ),
                     ),
                   )
                 ],
@@ -241,7 +339,8 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
             //Note Buttons
-            Container(height: 100,
+            Container(
+              height: 100,
               margin: EdgeInsets.only(
                   top: defaultMargin,
                   left: defaultMargin,
@@ -261,15 +360,26 @@ class _ProductPageState extends State<ProductPage> {
                       color: primary,
                     ),
                   ),
-                  SizedBox(width: 16,),
+                  SizedBox(
+                    width: 16,
+                  ),
                   Expanded(
                     child: Container(
-                      height: 54,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: primary),color: primary),
-                      child: Center(child: Text('Add to cart',style: primaryTextStyle.copyWith(fontWeight: semiBold),))
-                    ),
+                        height: 54,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: primary),
+                            color: primary),
+                        child: TextButton(
+                          onPressed: (){
+                            cartProvider.addCart(widget.product);
+                            showSuccessDialog();
+                          },
+                            child: Text(
+                          'Add to cart',
+                          style:
+                              primaryTextStyle.copyWith(fontWeight: semiBold),
+                        ))),
                   )
                 ],
               ),
