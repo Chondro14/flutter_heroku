@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
+import 'package:laravel_heroku/View/page/ProductPage.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ProductPopularCard extends StatelessWidget {
+
+   ProductModel product;
+  ProductPopularCard({required this.product});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, '/product');
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductPage(product: product)));
       },
       child: Container(
         width: 214,
@@ -22,8 +27,8 @@ class ProductPopularCard extends StatelessWidget {
             SizedBox(
               height: 30,
             ),
-            Image.asset(
-              'assets/sepatuhiking.png',
+            Image.network(
+              product.galleries?[0].url ?? "https://cf.shopee.co.id/file/50ba0b3840732bc949f759efc0fc2ba7",
               width: 215,
               height: 150,
               fit: BoxFit.cover,
@@ -35,17 +40,19 @@ class ProductPopularCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hiking',
+                      product.category?.name ?? "bebas",
                       style: secondaryTextStyle,
+
                     ),
                     SizedBox(height: 6),
                     Text(
-                      'COURT VISION 2.0',
+                      product.name ?? "",
+                      maxLines: 1,
                       style: blackTextStyle.copyWith(
                           fontSize: 18, fontWeight: semiBold),
                       overflow: TextOverflow.ellipsis,
                     ),SizedBox(height: 6,),
-                    Text('\$56,67',style: priceTextStyle.copyWith(fontSize: 14,fontWeight: medium),)
+                    Text("\$${product.price}",style: priceTextStyle.copyWith(fontSize: 14,fontWeight: medium),)
                   ],
                 ))
           ],

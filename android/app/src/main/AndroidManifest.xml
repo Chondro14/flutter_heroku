@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.laravel_heroku">
-   <application
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
         android:label="laravel_heroku"
         android:icon="@mipmap/ic_launcher">
         <activity

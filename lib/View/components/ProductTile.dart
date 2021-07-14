@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ProductTile extends StatelessWidget {
+  final ProductModel product ;
+
+  ProductTile({required this.product});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -17,8 +21,8 @@ class ProductTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(20)),
-              child: Image.asset(
-                'assets/sepatuhiking.png',
+              child: Image.network(
+                product.galleries?[0].url??'assets/sepatuhiking.png',
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,

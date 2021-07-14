@@ -4,28 +4,29 @@ import 'package:laravel_heroku/Model/UserModel.dart';
 import 'package:laravel_heroku/View/components/ProductPopularCard.dart';
 import 'package:laravel_heroku/View/components/ProductTile.dart';
 import 'package:laravel_heroku/providers/AuthProvider.dart';
+import 'package:laravel_heroku/providers/ProductProvider.dart';
 import 'package:laravel_heroku/theme.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     UserModel user = authProvider.user;
-
-    String? image() {
-      String? mantap;
-      if (user.profilePhotoUrl != null) {
-        mantap = user.profilePhotoUrl;
-        return mantap;
-      } else {
-        mantap =
-            "https://pbs.twimg.com/profile_images/3058705279/f548c9e85d5ec132dd227e3f4b91cbed_400x400.jpeg";
-        return mantap;
-      }
-    }
-
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
+    print(productProvider.products.length);
     Widget header() {
       return Container(
         margin: EdgeInsets.only(
@@ -168,11 +169,10 @@ class HomePage extends StatelessWidget {
                 width: defaultMargin,
               ),
               Row(
-                children: [
-                  ProductPopularCard(),
-                  ProductPopularCard(),
-                  ProductPopularCard()
-                ],
+                children: List.generate(
+                    productProvider.products.length,
+                    (index) => ProductPopularCard(
+                        product: productProvider.products[index])),
               )
             ],
           ),
@@ -195,13 +195,9 @@ class HomePage extends StatelessWidget {
       return Container(
         margin: EdgeInsets.only(top: 14),
         child: Column(
-          children: [
-            ProductTile(),
-            ProductTile(),
-            ProductTile(),
-            ProductTile()
-          ],
-        ),
+            children: productProvider.products
+                .map((e) => ProductTile(product: e))
+                .toList()),
       );
     }
 

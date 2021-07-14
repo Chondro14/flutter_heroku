@@ -1,14 +1,19 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ProductPage extends StatefulWidget {
+  final ProductModel product;
+  ProductPage({required this.product});
   @override
   State<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
+
+
   List<String> images = [
     'assets/sepatuhiking.png',
     'assets/sepatuhiking1.png',
@@ -66,9 +71,9 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
           CarouselSlider(
-              items: images
-                  .map((e) => Image.asset(
-                        e,
+              items: widget.product.galleries
+                  ?.map((e) => Image.network(
+                        e.url??"",
                         width: MediaQuery.of(context).size.width,
                         height: 310,
                         fit: BoxFit.cover,
@@ -86,7 +91,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: images.map((e) {
+            children: widget.product.galleries!.map((e) {
               index++;
               return indicator(index);
             }).toList(),
@@ -130,12 +135,12 @@ class _ProductPageState extends State<ProductPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'TERREX TRAILMAKER HIKING SHOES',
+                        '${widget.product.name}',
                         style: primaryTextStyle.copyWith(
                             fontSize: 18, fontWeight: semiBold),
                       ),
                       Text(
-                        'Hiking',
+                        '${widget.product.category?.name}',
                         style: secondaryTextStyle.copyWith(fontSize: 12),
                       )
                     ],
@@ -169,7 +174,7 @@ class _ProductPageState extends State<ProductPage> {
                     style: primaryTextStyle,
                   ),
                   Text(
-                    '\$143,98',
+                    '\$${widget.product.price}',
                     style: priceTextStyle.copyWith(
                         fontSize: 16, fontWeight: semiBold),
                   )
@@ -195,7 +200,7 @@ class _ProductPageState extends State<ProductPage> {
                     height: 12,
                   ),
                   Text(
-                    'Unpaved trails and mixed surfaces are easy when you have the traction and support you need. Casual enough for the daily commute.',
+                    '${widget.product.description}',
                     style: subtitleTextStyle.copyWith(fontWeight: light),
                     textAlign: TextAlign.justify,
                   ),
@@ -236,7 +241,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
             //Note Buttons
-            Container(
+            Container(height: 100,
               margin: EdgeInsets.only(
                   top: defaultMargin,
                   left: defaultMargin,
