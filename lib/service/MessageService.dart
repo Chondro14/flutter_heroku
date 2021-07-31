@@ -11,6 +11,7 @@ class MessageService{
       firestore.collection('messages').where('userId',isEqualTo: userId).snapshots().map((QuerySnapshot event) {
         var result = event.docs.map<MessageModel>((DocumentSnapshot message) {
           print(message.data());
+          print(message.metadata);
           return MessageModel.fromJson(message.data());
   }).toList();
 
