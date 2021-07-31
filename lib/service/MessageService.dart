@@ -8,11 +8,11 @@ class MessageService{
 
   Stream<List<MessageModel>> getMessagesUserid(int userId){
     try{
-      firestore.collection('messages').where('userId',isEqualTo: userId).snapshots().map((QuerySnapshot event) {
+      return firestore.collection('messages').where('userId',isEqualTo: userId).snapshots().map((QuerySnapshot event) {
         var result = event.docs.map<MessageModel>((DocumentSnapshot message) {
           print(message.data());
           print(message.metadata);
-          return MessageModel.fromJson(message.data());
+          return MessageModel.fromJson(message.data() as Map<String,dynamic>);
   }).toList();
 
   result.sort((MessageModel a,MessageModel b) => a.createdAt!.compareTo(b.createdAt!));
