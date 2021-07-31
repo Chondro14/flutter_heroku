@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laravel_heroku/Model/MessageModel.dart';
 import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/View/components/ChatBubble.dart';
 import 'package:laravel_heroku/providers/AuthProvider.dart';
@@ -9,7 +10,7 @@ import 'package:laravel_heroku/theme.dart';
 import 'package:provider/provider.dart';
 
 class DetailChatPage extends StatefulWidget {
-   ProductModel product;
+  ProductModel product;
 
   DetailChatPage(this.product);
 
@@ -18,22 +19,22 @@ class DetailChatPage extends StatefulWidget {
 }
 
 class _DetailChatPageState extends State<DetailChatPage> {
-
   TextEditingController messageController = TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
-
-    handleMessage()async{
-      await MessageService().addMessage(authProvider.user, true, messageController.text, widget.product);
+    handleMessage() async {
+      await MessageService().addMessage(
+          authProvider.user, true, messageController.text, widget.product);
 
       setState(() {
         widget.product = UninitializedProductModel();
         messageController.text = "";
       });
     }
+
     // TODO: implement build
     PreferredSizeWidget header() {
       return PreferredSize(
@@ -129,7 +130,7 @@ class _DetailChatPageState extends State<DetailChatPage> {
               ),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 setState(() {
                   widget.product = UninitializedProductModel();
                 });
@@ -142,7 +143,8 @@ class _DetailChatPageState extends State<DetailChatPage> {
                   color: backgroundColor5,
                   size: 12,
                 ),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: primary),
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: primary),
               ),
             ),
           ],
@@ -157,8 +159,9 @@ class _DetailChatPageState extends State<DetailChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-
-            widget.product is UninitializedProductModel ? SizedBox(): productReview(),
+            widget.product is UninitializedProductModel
+                ? SizedBox()
+                : productReview(),
             Row(
               children: [
                 Expanded(
@@ -197,21 +200,25 @@ class _DetailChatPageState extends State<DetailChatPage> {
     }
 
     Widget content() {
-      return ListView(
-        padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-        children: [
-          ChatBubble(
-            text: "Hallo Selamat pagi, ada yang bisa saya bantu?",
-            isSender: false,
-            hasProduct: false,
-          ),
-          ChatBubble(
-            text: "Mau Beli ini pak ?",
-            isSender: true,
-            hasProduct: true,
-          )
-        ],
-      );
+      return StreamBuilder<List<MessageModel>>(
+          stream:
+              MessageService().getMessagesUserid(authProvider.user.id as int),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView(
+                  padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+                  children: snapshot.data!
+                      .map((MessageModel e) => ChatBubble(
+                          text: e.message!,
+                          isSender: e.isFromUser!,
+                          hasProduct: e.productModel!))
+                      .toList());
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          });
     }
 
     return Scaffold(

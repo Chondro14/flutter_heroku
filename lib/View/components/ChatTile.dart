@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/MessageModel.dart';
 import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/View/page/DetailChatPage.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ChatTile extends StatelessWidget {
+  MessageModel messageModel;
+  ChatTile({required this.messageModel});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -32,7 +35,7 @@ class ChatTile extends StatelessWidget {
                         style: primaryTextStyle.copyWith(fontSize: 15),
                       ),
                       Text(
-                        'Mau beli ini pak?',maxLines: 2,overflow: TextOverflow.ellipsis,
+                        messageModel.message ?? "",maxLines: 2,overflow: TextOverflow.ellipsis,
                         style: secondaryTextStyle.copyWith(fontWeight: light),
                       )
                     ],

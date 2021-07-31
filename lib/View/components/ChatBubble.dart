@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ChatBubble extends StatelessWidget {
   final String text;
   final bool isSender;
-  final bool hasProduct;
+  final ProductModel hasProduct;
 
   ChatBubble({required this.text, required this.isSender,required this.hasProduct});
   @override
@@ -31,8 +32,8 @@ class ChatBubble extends StatelessWidget {
               children: [
                 ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      "assets/sepatuhiking.png",
+                    child: Image.network(
+                      hasProduct.galleries![0].url ?? "",
                       width: 70,
                     )),
                 SizedBox(
@@ -43,7 +44,7 @@ class ChatBubble extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "TERREX TRAILMAKER HIKING SHOES",
+                      hasProduct.name ?? "",
                       style: primaryTextStyle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -52,7 +53,7 @@ class ChatBubble extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      "\$ 57,15",
+                      "\$ ${hasProduct.price}",
                       style: primaryTextStyle.copyWith(fontWeight: medium),
                     )
                   ],
@@ -101,7 +102,7 @@ class ChatBubble extends StatelessWidget {
         crossAxisAlignment:
             isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          hasProduct ?productPreview() : SizedBox()
+          hasProduct is UninitializedProductModel ?SizedBox() : productPreview()
           ,
           Row(
             mainAxisAlignment:

@@ -1,10 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:laravel_heroku/Model/MessageModel.dart';
 import 'package:laravel_heroku/View/components/ChatTile.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
+import 'package:laravel_heroku/service/MessageService.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
 
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   Widget header() {
     return AppBar(
       automaticallyImplyLeading: false,
@@ -65,21 +74,36 @@ class ChatPage extends StatelessWidget {
     ));
   }
 
-  Widget content() {
-    return Expanded(
-        child: Container(
-      width: double.infinity,
-      color: backgroundColor3,
-      child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-        children: [ChatTile()],
-      ),
-    ));
-  }
+
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    Widget content() {
+      return StreamBuilder<List<MessageModel>>(stream: MessageService().getMessagesUserid(authProvider.user.id ?? 653),builder: (context,snapshot){
+        print(snapshot.hasData);
+       if(snapshot.hasData){
+         if(snapshot.data!.length == 0 ){
+           return emptyChat();
+         }
+         return Expanded(
+             child: Container(
+               width: double.infinity,
+               color: backgroundColor3,
+               child: ListView(
+                 padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+                 children: [ChatTile(messageModel: snapshot.data![snapshot.data!.length - 1 ],)],
+               ),
+             ));
+       }else{
+         return emptyChat();
+       }
+
+      });
+
+    }
     return Column(
       children: [header(), content()],
     );

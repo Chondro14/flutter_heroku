@@ -20,8 +20,8 @@ class MessageModel{
     userImage = json['userImage'];
     isFromUser = json['isFromUser'];
     productModel = json['product'] == {} ? UninitializedProductModel() : ProductModel.fromJson(json['product']);
-    createdAt = DateTime.parse(json['createdAt']);
-    updatedAt = DateTime.parse(json['updateAt']);
+    createdAt = DateTime.parse(json['created_at']);
+    updatedAt = DateTime.parse(json['update_at']);
 
   }
 
@@ -33,8 +33,8 @@ class MessageModel{
       'userImage':userImage,
       'isFromUser':isFromUser,
       'product':productModel is UninitializedProductModel ?{} :productModel!.toJson(),
-      'createdAt':createdAt.toString(),
-      'updateAt':updatedAt.toString()
+      'created_at':createdAt.toString(),
+      'update_at':updatedAt.toString()
     };
   }
 }

@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 class CartTile extends StatelessWidget {
   CartModel cartModel ;
+
   CartTile({required this.cartModel});
   @override
   Widget build(BuildContext context) {
