@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:laravel_heroku/Model/ProductModel.dart';
+import 'package:laravel_heroku/View/page/DetailChatPage.dart';
 import 'package:laravel_heroku/providers/CartProvider.dart';
 import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:laravel_heroku/theme.dart';
@@ -349,15 +350,20 @@ class _ProductPageState extends State<ProductPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: primary)),
-                    child: Icon(
-                      Icons.chat_rounded,
-                      color: primary,
+                  GestureDetector(
+                    onTap:(){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailChatPage(widget.product)));
+                    },
+                    child: Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: primary)),
+                      child: Icon(
+                        Icons.chat_rounded,
+                        color: primary,
+                      ),
                     ),
                   ),
                   SizedBox(

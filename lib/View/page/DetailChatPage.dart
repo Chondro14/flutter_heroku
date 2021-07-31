@@ -1,12 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
 import 'package:laravel_heroku/View/components/ChatBubble.dart';
+import 'package:laravel_heroku/providers/AuthProvider.dart';
+import 'package:laravel_heroku/service/MessageService.dart';
 import 'package:laravel_heroku/theme.dart';
+import 'package:provider/provider.dart';
 
-class DetailChatPage extends StatelessWidget {
+class DetailChatPage extends StatefulWidget {
+   ProductModel product;
+
+  DetailChatPage(this.product);
+
+  @override
+  State<DetailChatPage> createState() => _DetailChatPageState();
+}
+
+class _DetailChatPageState extends State<DetailChatPage> {
+
+  TextEditingController messageController = TextEditingController(text: "");
+
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+
+    handleMessage()async{
+      await MessageService().addMessage(authProvider.user, true, messageController.text, widget.product);
+
+      setState(() {
+        widget.product = UninitializedProductModel();
+        messageController.text = "";
+      });
+    }
     // TODO: implement build
     PreferredSizeWidget header() {
       return PreferredSize(
@@ -74,8 +101,8 @@ class DetailChatPage extends StatelessWidget {
           children: [
             ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  'assets/sepatuhiking.png',
+                child: Image.network(
+                  widget.product.galleries?[0].url ?? "",
                   width: 54,
                 )),
             SizedBox(
@@ -87,7 +114,7 @@ class DetailChatPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "TERREX TRAILMAKER HIKING SHOES",
+                    widget.product.name ?? "",
                     style: primaryTextStyle,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -95,21 +122,28 @@ class DetailChatPage extends StatelessWidget {
                     height: 2,
                   ),
                   Text(
-                    '\$57,15',
+                    '\$${widget.product.price}',
                     style: priceTextStyle.copyWith(fontWeight: medium),
                   )
                 ],
               ),
             ),
-            Container(
-              width: 20,
-              height: 20,
-              child: Icon(
-                Icons.close_rounded,
-                color: backgroundColor5,
-                size: 12,
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  widget.product = UninitializedProductModel();
+                });
+              },
+              child: Container(
+                width: 20,
+                height: 20,
+                child: Icon(
+                  Icons.close_rounded,
+                  color: backgroundColor5,
+                  size: 12,
+                ),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: primary),
               ),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: primary),
             ),
           ],
         ),
@@ -123,7 +157,8 @@ class DetailChatPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            productReview(),
+
+            widget.product is UninitializedProductModel ? SizedBox(): productReview(),
             Row(
               children: [
                 Expanded(
@@ -135,6 +170,8 @@ class DetailChatPage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Center(
                       child: TextFormField(
+                        controller: messageController,
+                        style: primaryTextStyle,
                         decoration: InputDecoration.collapsed(
                             hintText: "Type message....",
                             hintStyle: subtitleTextStyle),
@@ -145,9 +182,12 @@ class DetailChatPage extends StatelessWidget {
                 SizedBox(
                   width: 20,
                 ),
-                Image.asset(
-                  'assets/sendbutton.png',
-                  width: 45,
+                GestureDetector(
+                  onTap: handleMessage,
+                  child: Image.asset(
+                    'assets/sendbutton.png',
+                    width: 45,
+                  ),
                 )
               ],
             ),

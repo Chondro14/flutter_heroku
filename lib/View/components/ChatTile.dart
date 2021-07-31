@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:laravel_heroku/Model/ProductModel.dart';
+import 'package:laravel_heroku/View/page/DetailChatPage.dart';
 import 'package:laravel_heroku/theme.dart';
 
 class ChatTile extends StatelessWidget {
@@ -7,7 +9,7 @@ class ChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return GestureDetector(
-      onTap: (){Navigator.pushNamed(context, '/detail-chat');},
+      onTap: (){Navigator.push(context,MaterialPageRoute(builder: (context)=>DetailChatPage(UninitializedProductModel())));},
       child: Container(
         margin: EdgeInsets.only(top: 13),
         child: Column(

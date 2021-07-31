@@ -16,8 +16,12 @@ import 'package:laravel_heroku/providers/ProductProvider.dart';
 import 'package:laravel_heroku/providers/TransactionProvider.dart';
 import 'package:laravel_heroku/providers/WishListProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -44,7 +48,7 @@ class MyApp extends StatelessWidget {
           '/sign-in': (context) => SignInPage(),
           '/sign-up': (context) => SignUpPage(),
           '/home': (context) => MainPage(),
-          '/detail-chat': (context) => DetailChatPage(),
+
           '/edit-profile': (context) => EditProfilePage(),
           /*'/product': (context) => ProductPage(),*/
           '/cart': (context) => CartPage(),
